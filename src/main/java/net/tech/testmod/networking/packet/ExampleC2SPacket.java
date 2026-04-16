@@ -20,6 +20,9 @@ public class ExampleC2SPacket {
 
     }
 
+    public void toBytes(FriendlyByteBuf buf){
+
+    }
     public boolean handle(Supplier<NetworkEvent.Context> supplier){
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(()->{
@@ -27,7 +30,9 @@ public class ExampleC2SPacket {
             if (player == null) return;
             ServerLevel level= player.serverLevel();
 
-            EntityType.COW.spawn(level, (ItemStack) null,null,player.blockPosition(),MobSpawnType.COMMAND,true,false)
+            EntityType.COW.spawn(level, (ItemStack) null,null,player.blockPosition(),
+                    MobSpawnType.COMMAND,true,false);
+
         });
         return true;
     }

@@ -2,10 +2,13 @@ package net.tech.testmod.networking;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.tech.testmod.TestMod;
+import net.tech.testmod.networking.packet.CortisolSyncS2CPacket;
+import net.tech.testmod.networking.packet.ExampleC2SPacket;
 
 public class ModMessages {
     private static SimpleChannel INSTANCE;
@@ -22,6 +25,17 @@ public class ModMessages {
                 .serverAcceptedVersions(s->true)
                 .simpleChannel();
         INSTANCE=net;
+
+        net.messageBuilder(ExampleC2SPacket.class,id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(ExampleC2SPacket::new)
+                .encoder(ExampleC2SPacket::toBytes)
+                .consumerMainThread(ExampleC2SPacket::handle)
+                .add();
+        net.messageBuilder(CortisolSyncS2CPacket.class,id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(CortisolSyncS2CPacket::new)
+                .encoder(CortisolSyncS2CPacket::toBytes)
+                .consumerMainThread(CortisolSyncS2CPacket::handle)
+                .add();
 
     }
 
