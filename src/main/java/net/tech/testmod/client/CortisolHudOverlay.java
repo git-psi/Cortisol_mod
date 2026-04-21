@@ -13,19 +13,18 @@ import net.tech.testmod.TestMod;
 public class CortisolHudOverlay {
     private static final ResourceLocation CORTISOL_BAR =new ResourceLocation(TestMod.MOD_ID, "/textures/cortisol/cortisol_meter.png");
     private static final ResourceLocation CORTISOL_ARROW =new ResourceLocation(TestMod.MOD_ID, "/textures/cortisol/cortisol_arrow.png");
-
+    private static float angle = (ClientCortisolData.getPlayerCortisol() * 1.8f) - 90;
     public static IGuiOverlay HUD_CORTISOL=(CortisolHudOverlay::render);
 
     private static void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
         int display_width_bar = 110;
         int display_height_bar = 65;
         //render the bar
+
         int x_bar = 0;
         int y_bar = screenHeight - display_height_bar;
-        float angle = (ClientCortisolData.getPlayerCortisol() * 1.8f) - 90f;
-        System.out.println(angle);
-        System.out.println(ClientCortisolData.getPlayerCortisol());
-
+        float targetAngle = (ClientCortisolData.getPlayerCortisol() * 1.8f) - 90f;
+        angle += (targetAngle - angle) * 0.1f;
 
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
