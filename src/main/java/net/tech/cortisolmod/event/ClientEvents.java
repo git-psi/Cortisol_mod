@@ -24,11 +24,13 @@ public class ClientEvents {
 
     @Mod.EventBusSubscriber(modid = CortisolMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class cameraShake {
-        private static final int BREATHING_START_CORTISOL = 80;
+        private static final int BREATHING_START_CORTISOL = 90;
         private static final float BASE_BREATHING_SPEED = 1.5f;
         private static final float MAX_BREATHING_SPEED = 3.5f;
-        private static final float BASE_BREATHING_INTENSITY = 0.01f;
-        private static final float MAX_BREATHING_INTENSITY = 0.1f;
+        private static final float BASE_BREATHING_INTENSITY = 0.005f;
+        private static final float MAX_BREATHING_INTENSITY = 0.05f;
+        private static final int SCREEN_SHAKING_START_CORTISOL = 80;
+
 
         @SubscribeEvent
         public static void onFovCompute(ViewportEvent.ComputeFov event) {
@@ -71,8 +73,8 @@ public class ClientEvents {
 
             player.getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(data -> {
                 int cortisol = ClientCortisolData.getPlayerCortisol();
-                if (cortisol > 80) {
-                    float intensity = (float) (cortisol - 80) / 20;
+                if (cortisol > SCREEN_SHAKING_START_CORTISOL) {
+                float intensity = (float) (cortisol - SCREEN_SHAKING_START_CORTISOL) / 25;
 
                     float shakeX = (float) (Math.random() - 0.5) * intensity;
                     float shakeY = (float) (Math.random() - 0.5) * intensity;
