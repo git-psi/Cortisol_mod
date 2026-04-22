@@ -30,7 +30,7 @@ public class CortisolHudOverlay {
 
     public static final float SHAKING_START_CORTISOL = 100f;
     public static final float SHAKING_END_CORTISOL = 130f;
-    public static final float MAX_SHAKE_ANGLE_DEGREES = 18f;
+    public static final float MAX_SHAKE_ANGLE_DEGREES = 10f;
     public static final float SHAKE_RANDOM_FACTOR = 0.5f;
 
     private static float angle = (ClientCortisolData.getPlayerCortisol() * ANGLE_DEGREES_PER_CORTISOL) + ANGLE_OFFSET_DEGREES;
