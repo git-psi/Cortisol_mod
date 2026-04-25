@@ -2,11 +2,11 @@ package net.tech.cortisolmod.client;
 
 public class ClientCortisolData {
 
-    private static int playerCortisol;
-    public static void set(int cortisol){
+    private static float playerCortisol;
+    public static void set(float cortisol){
         ClientCortisolData.playerCortisol = cortisol;
     }
-    public static int getPlayerCortisol( ){
+    public static float getPlayerCortisol( ){
         return playerCortisol;
     }
 }

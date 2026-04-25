@@ -1,0 +1,22 @@
+{
+  "targets": ["swap"],
+  "passes": [
+    {
+      "name": "cortisolmod:cortisol_blur",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        {
+        "name": "RADIUS",
+          "values":[0.3]
+        }
+      ]
+    },
+    {
+      "name": "minecraft:blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+
+    }
+  ]
+}

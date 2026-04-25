@@ -3,25 +3,25 @@ package net.tech.cortisolmod.cortisol;
 import net.minecraft.nbt.CompoundTag;
 
 public class PlayerCortisol {
-    public static final int MIN_CORTISOL = 0;
-    public static final int VISIBLE_MAX_CORTISOL = 100;
-    public static final int REAL_MAX_CORTISOL = 130;
+    public static final float MIN_CORTISOL = 0f;
+    public static final float VISIBLE_MAX_CORTISOL = 100f;
+    public static final float REAL_MAX_CORTISOL = 130f;
 
-    private int cortisol;
+    private float cortisol;
 
-    public int getCortisol() {
+    public float getCortisol() {
         return cortisol;
     }
 
-    public void setCortisol(int value) {
+    public void setCortisol(float value) {
         this.cortisol = Math.max(MIN_CORTISOL, Math.min(value, REAL_MAX_CORTISOL));
     }
 
-    public void addCortisol(int add) {
+    public void addCortisol(float add) {
         setCortisol(cortisol + add);
     }
 
-    public void subCortisol(int sub) {
+    public void subCortisol(float sub) {
         setCortisol(cortisol - sub);
     }
 
@@ -30,10 +30,10 @@ public class PlayerCortisol {
     }
 
     public void saveNBTData(CompoundTag nbt) {
-        nbt.putInt("cortisol", cortisol);
+        nbt.putFloat("cortisol", cortisol);
     }
 
     public void loadNBTData(CompoundTag nbt) {
-        cortisol = nbt.getInt("cortisol");
+        cortisol = nbt.getFloat("cortisol");
     }
 }

@@ -40,12 +40,12 @@ public class CortisolHudOverlay {
         int x_bar = 0;
         int y_bar = screenHeight - HUD_BAR_HEIGHT;
 
-        int currentCortisol = ClientCortisolData.getPlayerCortisol();
-        int displayCortisol = Math.min(currentCortisol, PlayerCortisol.VISIBLE_MAX_CORTISOL);
+        float currentCortisol = (float) ClientCortisolData.getPlayerCortisol();
+        float displayCortisol = Math.min(currentCortisol, PlayerCortisol.VISIBLE_MAX_CORTISOL);
 
         float targetAngle = (displayCortisol * ANGLE_DEGREES_PER_CORTISOL) + ANGLE_OFFSET_DEGREES;
 
-        float overflowCortisol = Math.max(0, currentCortisol - (int) SHAKING_START_CORTISOL);
+        float overflowCortisol = Math.max(0, currentCortisol - SHAKING_START_CORTISOL);
         float overflowProgress = Math.min(overflowCortisol / (SHAKING_END_CORTISOL - SHAKING_START_CORTISOL), 1.0f);
         float shakeAngle = 0.0f;
 

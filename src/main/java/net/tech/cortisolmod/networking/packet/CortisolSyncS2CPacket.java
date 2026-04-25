@@ -7,18 +7,18 @@ import net.tech.cortisolmod.client.ClientCortisolData;
 import java.util.function.Supplier;
 
 public class CortisolSyncS2CPacket {
-    private final int cortisol;
+    private final float cortisol;
 
-    public CortisolSyncS2CPacket(int cortisol){
+    public CortisolSyncS2CPacket(float cortisol){
         this.cortisol=cortisol;
     }
 
     public CortisolSyncS2CPacket(FriendlyByteBuf buf){
-        this.cortisol=buf.readInt();
+        this.cortisol=buf.readFloat();
     }
 
     public void toBytes(FriendlyByteBuf buf){
-        buf.writeInt(cortisol);
+        buf.writeFloat(cortisol);
     }
     public boolean handle(Supplier<NetworkEvent.Context> supplier){
         NetworkEvent.Context context = supplier.get();

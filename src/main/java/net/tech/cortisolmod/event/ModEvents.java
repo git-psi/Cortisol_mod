@@ -111,7 +111,7 @@ public class ModEvents {
             }
 
             player.getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(cortisol -> {
-                int currentCortisol = cortisol.getCortisol();
+                float currentCortisol = cortisol.getCortisol();
 
                 if (currentCortisol < LOW_CORTISOL_THRESHOLD) {
                     player.addEffect(new MobEffectInstance(

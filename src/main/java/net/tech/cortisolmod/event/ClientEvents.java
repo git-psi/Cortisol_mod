@@ -1,10 +1,14 @@
 package net.tech.cortisolmod.event;
 
+import com.mojang.blaze3d.shaders.Uniform;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.tech.cortisolmod.CortisolMod;
@@ -12,6 +16,14 @@ import net.tech.cortisolmod.client.ClientCortisolData;
 import net.tech.cortisolmod.client.CortisolHudOverlay;
 import net.tech.cortisolmod.cortisol.PlayerCortisol;
 import net.tech.cortisolmod.cortisol.PlayerCortisolProvider;
+import net.tech.cortisolmod.mixin.PostChainAccessor;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+
+import java.util.List;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class ClientEvents {
     @Mod.EventBusSubscriber(modid = CortisolMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -24,11 +36,13 @@ public class ClientEvents {
 
     @Mod.EventBusSubscriber(modid = CortisolMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class cameraShake {
-        private static final int BREATHING_START_CORTISOL = 80;
+        private static final int BREATHING_START_CORTISOL = 90;
         private static final float BASE_BREATHING_SPEED = 1.5f;
         private static final float MAX_BREATHING_SPEED = 3.5f;
-        private static final float BASE_BREATHING_INTENSITY = 0.01f;
-        private static final float MAX_BREATHING_INTENSITY = 0.1f;
+        private static final float BASE_BREATHING_INTENSITY = 0.005f;
+        private static final float MAX_BREATHING_INTENSITY = 0.05f;
+        private static final int SCREEN_SHAKING_START_CORTISOL = 80;
+
 
         @SubscribeEvent
         public static void onFovCompute(ViewportEvent.ComputeFov event) {
@@ -38,12 +52,12 @@ public class ClientEvents {
                 return;
             }
 
-            int cortisol = ClientCortisolData.getPlayerCortisol();
+            float cortisol = ClientCortisolData.getPlayerCortisol();
             if (cortisol <= BREATHING_START_CORTISOL) {
                 return;
             }
 
-            float progress = Math.min(
+            float progress = min(
                     (float) (cortisol - BREATHING_START_CORTISOL) / (PlayerCortisol.REAL_MAX_CORTISOL - BREATHING_START_CORTISOL),
                     1.0f
             );
@@ -53,7 +67,7 @@ public class ClientEvents {
 
             long time = System.currentTimeMillis();
             double t = time / 1000.0;
-            double breathing = Math.max(0, Math.sin(t * breathingSpeed * Math.PI * 2.0) - 0.4);
+            double breathing = max(0, Math.sin(t * breathingSpeed * Math.PI * 2.0) - 0.4);
 
             double baseFov = event.getFOV();
             double newFov = baseFov * (1.0f - (float) (breathing * breathingIntensity));
@@ -70,9 +84,9 @@ public class ClientEvents {
             }
 
             player.getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(data -> {
-                int cortisol = ClientCortisolData.getPlayerCortisol();
-                if (cortisol > 80) {
-                    float intensity = (float) (cortisol - 80) / 20;
+                float cortisol = ClientCortisolData.getPlayerCortisol();
+                if (cortisol > SCREEN_SHAKING_START_CORTISOL) {
+                float intensity = (float) (cortisol - SCREEN_SHAKING_START_CORTISOL) / 25;
 
                     float shakeX = (float) (Math.random() - 0.5) * intensity;
                     float shakeY = (float) (Math.random() - 0.5) * intensity;
@@ -82,5 +96,58 @@ public class ClientEvents {
                 }
             });
         }
+
+        @SubscribeEvent
+        public static void cameraBlur(net.minecraftforge.event.TickEvent.RenderTickEvent event){
+            Minecraft mc = Minecraft.getInstance();
+            //ShaderInstance shader = mc.gameRenderer.getShader("cortisol_blur");
+            Player player = mc.player;
+
+
+
+            if (mc.gameRenderer.currentEffect() ==null) {
+                ResourceLocation blur = new ResourceLocation(CortisolMod.MOD_ID, "shaders/post/cortisol_blur.json");
+                mc.gameRenderer.loadEffect(blur);
+            }
+//            if (shader == null){
+//                System.out.println("gugugaga");
+//            }
+
+            PostChain chain = mc.gameRenderer.currentEffect();
+            if (chain == null) return;
+
+
+            if ((!(chain instanceof PostChainAccessor accessor))) {
+                return;
+            }
+
+
+
+            List<PostPass> passes = accessor.getPasses();
+
+            for (PostPass pass : passes) {
+                EffectInstance effect = pass.getEffect();
+                Uniform u = effect.getUniform("RADIUS");
+
+                if (u != null) {
+
+
+                    float currentCortisol = ClientCortisolData.getPlayerCortisol();
+                    float value = min(max(
+                            (currentCortisol - 0.75f * PlayerCortisol.REAL_MAX_CORTISOL)
+                                    / (0.25f * PlayerCortisol.REAL_MAX_CORTISOL),
+                            0), 1) * 0.4f;
+
+                    u.set(value);
+
+                }
+            }
+
+
+
+        }
+
     }
+
 }
+

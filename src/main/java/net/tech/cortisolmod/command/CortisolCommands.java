@@ -25,10 +25,10 @@ public class CortisolCommands {
                     .then(Commands.argument("value", IntegerArgumentType.integer())
                         .executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            int value = IntegerArgumentType.getInteger(ctx, "value");
+                            float value = (float)   IntegerArgumentType.getInteger(ctx, "value");
 
                             player.getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(cortisol -> {
-                                cortisol.setCortisol(cortisol.getCortisol() + value);
+                                cortisol.addCortisol(value);
                                 ModMessages.sendToPlayer(
                                     new CortisolSyncS2CPacket(cortisol.getCortisol()),
                                     player
@@ -45,7 +45,7 @@ public class CortisolCommands {
                     .then(Commands.argument("value", IntegerArgumentType.integer())
                         .executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            int value = IntegerArgumentType.getInteger(ctx, "value");
+                            float value = (float)IntegerArgumentType.getInteger(ctx, "value");
 
                             player.getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(cortisol -> {
                                 cortisol.setCortisol(value);
