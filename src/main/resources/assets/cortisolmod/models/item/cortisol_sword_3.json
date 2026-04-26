@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "cortisolmod:item/cortisol_sword_3"
+  }
+}

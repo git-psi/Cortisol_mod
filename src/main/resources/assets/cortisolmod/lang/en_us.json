@@ -1,4 +1,11 @@
 {
+  "death.attack.cortisol": "%1$s is dead due to CORTISOOOOL damage !",
 
-  "death.attack.cortisol": "%1$s is dead due to CORTISOOOOL damage !"
+  "tooltip.cortisolmod.cortisol.separator": "",
+
+  "item.cortisolmod.cortisol_sword": "Cortisol Sword",
+  "tooltip.cortisolmod.sword.desc": "§7An unstable blade bound to the bearer's cortisol level.",
+  "tooltip.cortisolmod.cortisol": "§bCortisol: §f%s%%",
+  "tooltip.cortisolmod.damage": "§cDamage: §f%s ⚔",
+  "tooltip.cortisolmod.stage": "§eStage: §f%s"
 }

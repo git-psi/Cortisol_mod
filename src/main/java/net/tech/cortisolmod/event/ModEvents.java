@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.Entity;
@@ -28,6 +29,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.tech.cortisolmod.CortisolMod;
 import net.tech.cortisolmod.cortisol.PlayerCortisol;
 import net.tech.cortisolmod.cortisol.PlayerCortisolProvider;
+import net.tech.cortisolmod.item.custom.CortisolSwordItem;
 import net.tech.cortisolmod.networking.ModMessages;
 import net.tech.cortisolmod.networking.packet.CortisolSyncS2CPacket;
 import net.tech.cortisolmod.util.ModDamageTypes;
@@ -160,6 +162,20 @@ public class ModEvents {
                             true
                     ));
                 }
+
+                ItemStack held = player.getMainHandItem();
+
+                if (held.getItem() instanceof CortisolSwordItem) {
+                    int swordLevel = CortisolSwordItem.getLevel(currentCortisol);
+                    int current = held.getOrCreateTag().getInt("cortisol_level");
+
+                    if (swordLevel != current) {
+                        held.getOrCreateTag().putInt("cortisol_level", swordLevel);
+
+                        // 🔥 force refresh des attributs de l’item
+                        player.getInventory().setChanged();
+                    }
+                }
             });
         }
     }
@@ -184,18 +200,6 @@ public class ModEvents {
             event.getEntity().getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(cortisol -> {
                 if (cortisol.getCortisol() < PlayerCortisol.REAL_MAX_CORTISOL) {
                     cortisol.addCortisol(ATTACK_INCREASE_AMOUNT);
-                    ModMessages.sendToPlayer(new CortisolSyncS2CPacket(cortisol.getCortisol()), player);
-                }
-            });
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerDamage(LivingHurtEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            event.getEntity().getCapability(PlayerCortisolProvider.PLAYER_CORTISOL).ifPresent(cortisol -> {
-                if (cortisol.getCortisol() < PlayerCortisol.REAL_MAX_CORTISOL) {
-                    cortisol.addCortisol(DAMAGE_INCREASE_AMOUNT);
                     ModMessages.sendToPlayer(new CortisolSyncS2CPacket(cortisol.getCortisol()), player);
                 }
             });

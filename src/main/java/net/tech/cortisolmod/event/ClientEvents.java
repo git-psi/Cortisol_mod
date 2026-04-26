@@ -4,6 +4,7 @@ import com.mojang.blaze3d.shaders.Uniform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -24,6 +25,8 @@ import net.tech.cortisolmod.client.cinematic.BlinkCinematic;
 import net.tech.cortisolmod.client.cinematic.CinematicConfig;
 import net.tech.cortisolmod.cortisol.PlayerCortisol;
 import net.tech.cortisolmod.cortisol.PlayerCortisolProvider;
+import net.tech.cortisolmod.item.ModItems;
+import net.tech.cortisolmod.item.custom.CortisolSwordItem;
 import net.tech.cortisolmod.mixin.PostChainAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -53,6 +56,20 @@ public class ClientEvents {
                 public void onResourceManagerReload(ResourceManager manager) {
                     CinematicConfig.load(manager);
                 }
+            });
+        }
+
+        @SubscribeEvent
+        public static void onClientSetup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
+            event.enqueueWork(() -> {
+                ItemProperties.register(
+                        ModItems.CORTISOL_SWORD.get(),
+                        new ResourceLocation(CortisolMod.MOD_ID, "cortisol_level"),
+                        (stack, level, entity, seed) -> {
+                            float cortisol = ClientCortisolData.getPlayerCortisol();
+                            return (float) CortisolSwordItem.getLevel(cortisol);
+                        }
+                );
             });
         }
     }
