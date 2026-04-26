@@ -1,5 +1,9 @@
 package net.tech.cortisolmod.client.cinematic;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
+
 /**
  * Gère l'animation de clignement.
  *
@@ -190,5 +194,28 @@ public class BlinkCinematic {
         }
 
         return 1f; // pleinement visible entre les deux fades
+    }
+
+    public static void playCinematic() {
+        animateTo(1.0f);
+        playSequence(CinematicConfig.buildSequenceArray());
+
+        Minecraft.getInstance().execute(() -> {
+            Minecraft.getInstance().getSoundManager().play(
+                    SimpleSoundInstance.forMusic(SoundEvents.MUSIC_DISC_OTHERSIDE)
+            );
+        });
+
+        CinematicConfig.LogoConfig logo = CinematicConfig.getLogo();
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(logo.appearMs());
+                showLogo();
+                Thread.sleep(logo.fadeOutMs() - logo.appearMs());
+                startLogoFadeOut();
+            } catch (InterruptedException ignored) {}
+        });
+        t.setDaemon(true);
+        t.start();
     }
 }

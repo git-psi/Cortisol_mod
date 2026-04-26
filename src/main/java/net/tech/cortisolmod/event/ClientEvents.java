@@ -150,30 +150,6 @@ public class ClientEvents {
         }
 
         @SubscribeEvent
-        public static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-            BlinkCinematic.animateTo(1.0f);
-            BlinkCinematic.playSequence(CinematicConfig.buildSequenceArray());
-
-            Minecraft.getInstance().execute(() -> {
-                Minecraft.getInstance().getSoundManager().play(
-                        SimpleSoundInstance.forMusic(SoundEvents.MUSIC_DISC_OTHERSIDE)
-                );
-            });
-
-            CinematicConfig.LogoConfig logo = CinematicConfig.getLogo();
-            Thread t = new Thread(() -> {
-                try {
-                    Thread.sleep(logo.appearMs());
-                    BlinkCinematic.showLogo();
-                    Thread.sleep(logo.fadeOutMs() - logo.appearMs());
-                    BlinkCinematic.startLogoFadeOut();
-                } catch (InterruptedException ignored) {}
-            });
-            t.setDaemon(true);
-            t.start();
-        }
-
-        @SubscribeEvent
         public static void onRenderHotbar(RenderGuiOverlayEvent.Pre event) {
             if (event.getOverlay() == VanillaGuiOverlay.HOTBAR.type()) {
                 if (BlinkCinematic.getBlinkAmount() > 0.23f) {
@@ -191,8 +167,6 @@ public class ClientEvents {
             if ((!(chain instanceof PostChainAccessor accessor))) {
                 return;
             }
-
-            System.out.println("blur");
 
             List<PostPass> passes = accessor.getPasses();
 
@@ -213,9 +187,6 @@ public class ClientEvents {
 
                 }
             }
-
-
-
         }
 
     }
