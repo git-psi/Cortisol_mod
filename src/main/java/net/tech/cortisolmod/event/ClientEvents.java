@@ -1,6 +1,8 @@
 package net.tech.cortisolmod.event;
 
 import com.mojang.blaze3d.shaders.Uniform;
+import net.minecraft.client.Camera;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
@@ -42,47 +44,18 @@ import static java.lang.Math.min;
 
 
 public class ClientEvents {
-    @Mod.EventBusSubscriber(modid = CortisolMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ClientModBusEvents {
-        @SubscribeEvent
-        public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
-            event.registerAboveAll("cortisol", CortisolHudOverlay.HUD_CORTISOL);
-            event.registerAboveAll("eyes", EyesHudOverlay.HUD_EYES);
-        }
 
-        @SubscribeEvent
-        public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
-            event.registerReloadListener(new ResourceManagerReloadListener() {
-                @Override
-                public void onResourceManagerReload(ResourceManager manager) {
-                    CinematicConfig.load(manager);
-                }
-            });
-        }
-
-        @SubscribeEvent
-        public static void onClientSetup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent event) {
-            event.enqueueWork(() -> {
-                ItemProperties.register(
-                        ModItems.CORTISOL_SWORD.get(),
-                        new ResourceLocation(CortisolMod.MOD_ID, "cortisol_level"),
-                        (stack, level, entity, seed) -> {
-                            float cortisol = ClientCortisolData.getPlayerCortisol();
-                            return (float) CortisolSwordItem.getLevel(cortisol);
-                        }
-                );
-            });
-        }
-    }
 
     @Mod.EventBusSubscriber(modid = CortisolMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class cameraShake {
+    public static class cameraEffects {
         private static final int BREATHING_START_CORTISOL = 90;
         private static final float BASE_BREATHING_SPEED = 1.5f;
         private static final float MAX_BREATHING_SPEED = 3.5f;
         private static final float BASE_BREATHING_INTENSITY = 0.005f;
         private static final float MAX_BREATHING_INTENSITY = 0.05f;
         private static final int SCREEN_SHAKING_START_CORTISOL = 80;
+        private static CameraType lastCameraType = null;
+
 
 
         @SubscribeEvent
@@ -137,16 +110,23 @@ public class ClientEvents {
                 }
             });
         }
+
+
         @SubscribeEvent
-        public static void onLevelLoad(LevelEvent.Load event) {
-            if (!(event.getLevel() instanceof ClientLevel)) return;
-
+        public static void checkCameraPerson(TickEvent.ClientTickEvent event){
             Minecraft mc = Minecraft.getInstance();
+            if (mc.player==null)return;
+            CameraType current = mc.options.getCameraType();
 
-            if (mc.gameRenderer.currentEffect() == null) {
-                ResourceLocation blur = new ResourceLocation(CortisolMod.MOD_ID, "shaders/post/cortisol_blur.json");
-                mc.gameRenderer.loadEffect(blur);
+            if (lastCameraType!=current){
+
+                if (current.isFirstPerson()){
+                    ClientSetup.loadBlurShader();
+                }
+
+                lastCameraType=current;
             }
+
         }
 
         @SubscribeEvent
@@ -191,19 +171,7 @@ public class ClientEvents {
 
     }
 
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            ItemProperties.register(ModItems.SCROLLING_PHONE.get(),
-                    new ResourceLocation("cortisolmod", "activated"),
-                    (stack, level, entity, seed) -> {
-                        if (stack.hasTag() && stack.getTag().getBoolean("activated")) {
-                            return 1.0F;
-                        }
-                        return 0.0F;
-                    });
-        });
-    }
+
 
 }
 
