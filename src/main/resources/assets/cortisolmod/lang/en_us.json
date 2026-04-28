@@ -1,6 +1,6 @@
 {
   "death.attack.cortisol": "%1$s is dead due to CORTISOOOOL damage !",
-  "item.cortisolmod.scrolling_phone.json": "Scrolling Phone",
+  "item.cortisolmod.scrolling_phone": "Scrolling Phone",
 
   "tooltip.cortisolmod.cortisol.separator": "",
 
